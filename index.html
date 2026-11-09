@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c1210" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f0eee9" media="(prefers-color-scheme: light)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DrGilver">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>DrGilver | قیمت لحظه‌ای طلا، نقره و دلار</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@200;300;400;600;800&display=swap" rel="stylesheet">
+<script>
+/* تشخیص خودکار دستگاه: ios | android | desktop و نوع ورودی: touch | mouse */
+(function(){var u=navigator.userAgent,d="desktop";
+if(/iPhone|iPod|iPad/.test(u)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1))d="ios";
+else if(/Android/i.test(u))d="android";
+var r=document.documentElement;r.dataset.device=d;
+r.dataset.input=matchMedia("(pointer:coarse)").matches?"touch":"mouse";})();
+</script>
+<style>
+:root{color-scheme:dark;--bg:#0c1210;--card:rgba(255,255,255,.05);--card2:rgba(255,255,255,.085);--glass:rgba(255,255,255,.055);--glass2:rgba(255,255,255,.09);--line:rgba(255,255,255,.075);--text:#eef0ea;--mute:#8e9a94;--gold:#ecb866;--silver:#d3dad6;--usd:#52d0b3;--up:#4fd6a8;--down:#ee8a70;--b1:rgba(46,160,130,.17);--b2:rgba(236,184,102,.11);--b3:rgba(200,120,90,.09);--field:rgba(0,0,0,.3);--sheet:rgba(15,22,19,.94);--thumb:rgba(255,255,255,.14);--ease:cubic-bezier(.32,.72,0,1)}
+@media(prefers-color-scheme:light){:root{color-scheme:light;--bg:#f0eee9;--card:rgba(255,255,255,.72);--card2:rgba(255,255,255,.96);--glass:rgba(255,255,255,.72);--glass2:rgba(255,255,255,.96);--line:rgba(27,36,32,.08);--text:#1b2420;--mute:#6b756f;--gold:#a6711a;--silver:#5d6b66;--usd:#0e7c70;--up:#17936a;--down:#c85a3f;--b1:rgba(40,150,125,.15);--b2:rgba(230,170,80,.18);--b3:rgba(200,110,80,.09);--field:rgba(27,36,32,.05);--sheet:rgba(250,248,244,.95);--thumb:#fff}}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+html.lock,html.lock body{overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:Vazirmatn,Tahoma,sans-serif;overflow-x:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);-webkit-font-smoothing:antialiased;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+input{-webkit-user-select:text;user-select:text}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(45vmax 45vmax at 95% -10%,var(--b1),transparent 70%),radial-gradient(40vmax 40vmax at -5% 40%,var(--b2),transparent 70%),radial-gradient(45vmax 45vmax at 80% 115%,var(--b3),transparent 70%)}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 18px 120px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:26px}
+.dates b{display:block;font-weight:600;font-size:1rem}
+.dates span{color:var(--mute);font-size:.8rem;font-weight:300}
+.clock{direction:ltr;font-size:2.3rem;font-weight:200;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1}
+.clock small{font-size:.8rem;color:var(--mute);margin-inline-start:6px;font-weight:400}
+.status{max-width:100%;display:inline-flex;align-items:center;gap:8px;color:var(--mute);font-size:.76rem;margin-bottom:18px;font-weight:300;background:var(--card);padding:6px 12px;border-radius:999px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--mute);transition:background .3s}
+.dot.ok{background:var(--up);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 22%,transparent)}.dot.err{background:var(--down)}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-flow:dense;gap:12px}
+.card{position:relative;cursor:pointer;background:var(--card);border-radius:24px;padding:18px;min-height:128px;display:flex;flex-direction:column;justify-content:space-between;backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);box-shadow:inset 0 0 0 1px var(--line);transition:transform .35s var(--ease),background .25s;animation:rise .7s var(--ease) both;animation-delay:calc(var(--n)*45ms);outline:none}
+.card:active{transform:scale(.965);transition-duration:.12s}
+.card:focus-visible{box-shadow:inset 0 0 0 2px var(--gold)}
+@media(hover:hover){.card:hover{background:var(--card2)}}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.97)}}
+.card.hero{grid-column:span 2;grid-row:span 2;padding:24px;min-height:272px}
+.card.wide{grid-column:span 2}
+.card.gold{--c:var(--gold)}.card.silver{--c:var(--silver)}.card.usd{--c:var(--usd)}
+.top{display:flex;align-items:center;gap:10px}
+.ico{width:30px;height:30px;border-radius:50%;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);display:grid;place-items:center;font-weight:600;font-size:.7rem;flex:none}
+.card h3{font-size:.88rem;font-weight:400;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.top{min-width:0}
+.chg{font-size:.72rem;font-weight:600;font-variant-numeric:tabular-nums;padding:3px 8px;border-radius:999px;background:var(--field);color:var(--mute);opacity:0;transition:opacity .4s;white-space:nowrap}
+.chg.up{color:var(--up);opacity:1}.chg.down{color:var(--down);opacity:1}.chg.flat{opacity:1}
+.price{font-size:1.45rem;font-weight:600;font-variant-numeric:tabular-nums;margin-top:18px;line-height:1.2}
+.card.wide .price{font-size:1.85rem}
+.card.hero .price{font-size:3.2rem;font-weight:800;letter-spacing:-.01em;line-height:1.05}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px}
+.unit{font-size:.72rem;color:var(--mute);font-weight:300}
+.card.flash .price{animation:fl 1.2s}
+@keyframes fl{0%{color:var(--c)}100%{color:var(--text)}}
+footer{margin-top:34px;text-align:center;color:var(--mute);font-size:.73rem;font-weight:300;line-height:2}
+footer a{color:inherit;text-underline-offset:3px}
+
+.dock{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;gap:2px;padding:4px;border-radius:999px;background:var(--glass2);box-shadow:inset 0 0 0 1px var(--line),0 8px 30px rgba(0,0,0,.25);backdrop-filter:blur(26px) saturate(1.6);-webkit-backdrop-filter:blur(26px) saturate(1.6)}
+.dock button{background:none;border:0;color:var(--text);min-width:44px;max-width:150px;height:40px;border-radius:999px;cursor:pointer;display:flex;gap:6px;align-items:center;justify-content:center;padding:0 13px;font:inherit;font-size:.78rem;white-space:nowrap;transition:background .2s,transform .3s var(--ease),max-width .5s var(--ease),min-width .5s var(--ease),height .5s var(--ease),padding .5s var(--ease),opacity .25s}
+.dock button:active{transform:scale(.88);background:var(--glass)}
+.dock button:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.dock button[hidden]{display:none}
+.dock{transition:transform .5s var(--ease),padding .5s var(--ease)}
+.dock::before{content:"";position:absolute;left:50%;top:50%;width:26px;height:4px;margin:-2px 0 0 -13px;border-radius:2px;background:var(--mute);opacity:0;transition:opacity .35s}
+.dock.min{gap:0;padding:11px 22px;cursor:pointer}
+.dock.min::before{opacity:.7}
+.dock.min button{max-width:0;min-width:0;height:0;padding:0;opacity:0;pointer-events:none}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translate(-50%,16px);background:var(--sheet);color:var(--text);padding:10px 18px;border-radius:999px;font-size:.82rem;box-shadow:inset 0 0 0 1px var(--line),0 8px 30px rgba(0,0,0,.3);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);opacity:0;pointer-events:none;transition:opacity .3s,transform .45s var(--ease);z-index:20;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.dock svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---- sheet ---- */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;z-index:10;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s .45s}
+.ov.on{opacity:1;visibility:visible;transition:opacity .35s ease}
+.sheet{background:var(--sheet);backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);box-shadow:inset 0 0 0 1px var(--line);border-radius:32px 32px 0 0;width:min(520px,100%);max-height:92vh;overflow:auto;overscroll-behavior:contain;padding:0 18px calc(22px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .5s var(--ease)}
+.ov.on .sheet{transform:none}
+.grab{height:22px;display:grid;place-items:center;touch-action:none;cursor:grab}
+.grab::after{content:"";width:38px;height:5px;border-radius:3px;background:var(--mute);opacity:.4}
+.sh-head{display:flex;align-items:center;justify-content:space-between;margin:2px 0 14px;touch-action:none}
+.sh-head h2{font-size:1.05rem;font-weight:600;display:flex;align-items:center;gap:10px}
+.sh-head .ico{width:28px;height:28px}
+.x{background:var(--glass);border:0;color:var(--mute);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:.8rem;transition:transform .25s var(--ease)}
+.x:active{transform:scale(.85)}
+.sheet p{line-height:2;color:var(--mute);font-size:.92rem;font-weight:300}
+.btn{display:inline-block;margin-top:14px;background:var(--gold);color:#16130a;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:999px;transition:transform .25s var(--ease)}
+.btn:active{transform:scale(.95)}
+.sheet .note,.note{color:var(--mute);font-size:.72rem;margin-top:14px;line-height:1.9;font-weight:300;text-align:center}
+.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--mute)}
+
+/* ---- پیش‌نمایش ---- */
+.pk-price{font-size:2.4rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.15;letter-spacing:-.01em}
+.pk-sub{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:.8rem;color:var(--mute);font-weight:300;min-height:24px}
+.pill{font-weight:600;font-size:.76rem;padding:3px 9px;border-radius:999px;background:var(--field);font-variant-numeric:tabular-nums}
+.chart{position:relative;margin-top:16px;direction:ltr;height:190px;border-radius:20px;background:var(--field);overflow:hidden;touch-action:pan-y;cursor:crosshair}
+.chart svg{position:absolute;inset:0;width:100%;height:100%}
+.chart .ax{position:absolute;left:10px;font-size:.66rem;color:var(--mute);font-variant-numeric:tabular-nums;pointer-events:none}
+.chart .cur{position:absolute;top:0;bottom:0;width:1px;background:var(--mute);opacity:0;pointer-events:none;transition:opacity .15s}
+.chart .pt{position:absolute;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--bg);border:2.5px solid var(--cc,var(--gold));opacity:0;pointer-events:none;transition:opacity .15s}
+.chart.on .cur,.chart.on .pt{opacity:1}
+.chart .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--mute);font-size:.8rem;font-weight:300;direction:rtl;text-align:center;padding:0 20px}
+.cdates{display:flex;justify-content:space-between;direction:ltr;margin:6px 6px 0;font-size:.68rem;color:var(--mute);font-weight:300}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.stat{background:var(--field);border-radius:18px;padding:12px 14px}
+.stat small{display:block;color:var(--mute);font-size:.72rem;font-weight:300;line-height:1.7}
+.stat b{display:block;margin-top:2px;font-size:1.02rem;font-weight:600;font-variant-numeric:tabular-nums}
+.stat.buy b{color:var(--up)}.stat.sell b{color:var(--down)}
+.stat em{font-style:normal;font-size:.62rem;color:var(--mute);margin-inline-start:4px;font-weight:300}
+
+/* ---- ماشین حساب ---- */
+.seg{position:relative;display:grid;grid-template-columns:repeat(var(--n),1fr);padding:3px;border-radius:14px;background:var(--field);margin-top:10px}
+.seg .thumb{position:absolute;top:3px;bottom:3px;right:3px;width:calc((100% - 6px)/var(--n));border-radius:11px;background:var(--thumb);box-shadow:0 2px 8px rgba(0,0,0,.25);transform:translateX(calc(var(--i)*-100%));transition:transform .45s var(--ease)}
+.seg button{position:relative;z-index:1;background:none;border:0;color:var(--mute);font:inherit;font-size:.85rem;padding:9px 4px;cursor:pointer;border-radius:11px;transition:color .25s}
+.seg button.on{color:var(--text);font-weight:600}
+.seg.sm button{font-size:.8rem;padding:7px 4px}
+.cap{display:block;font-size:.74rem;color:var(--mute);margin:16px 4px 0;font-weight:300}
+.inwrap{position:relative;margin-top:8px;background:var(--field);border:1px solid var(--line);border-radius:20px;display:flex;align-items:center;padding:4px 16px;transition:border-color .25s,box-shadow .25s}
+.inwrap:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 20%,transparent)}
+.inwrap input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--text);font:inherit;font-size:1.7rem;font-weight:600;padding:10px 0;font-variant-numeric:tabular-nums}
+.inwrap input::placeholder{color:var(--mute);opacity:.5;font-weight:300}
+.suf{color:var(--mute);font-size:.82rem;margin-inline-start:8px;white-space:nowrap}
+.clr{background:var(--glass2);border:0;color:var(--mute);width:24px;height:24px;border-radius:50%;margin-inline-start:8px;cursor:pointer;font-size:.65rem;flex:none}
+.clr[hidden]{display:none}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex:none;background:var(--glass);border:1px solid var(--line);color:var(--text);font:inherit;font-size:.78rem;padding:7px 14px;border-radius:999px;cursor:pointer;transition:transform .25s var(--ease),background .2s}
+.chips button:active{transform:scale(.92);background:var(--glass2)}
+.res{margin-top:16px;background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 14%,transparent),var(--field));border:1px solid var(--line);border-radius:24px;padding:20px 18px;text-align:center}
+.res small{color:var(--mute);font-weight:300;font-size:.8rem}
+.res .out{display:block;font-size:2rem;font-weight:800;margin-top:6px;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1.3}
+.res .out.pop{animation:pop .35s var(--ease)}
+@keyframes pop{from{opacity:.4;transform:translateY(5px)}}
+.eqrows{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-top:16px}
+.eqrows div{background:var(--field);border-radius:14px;padding:9px 6px}
+.eqrows span{display:block;color:var(--mute);font-size:.7rem;font-weight:300}
+.eqrows b{font-size:.92rem;font-weight:600;font-variant-numeric:tabular-nums}
+
+
+.pk-price .u{font-size:.78rem;color:var(--mute);font-weight:300;margin-inline-start:7px;letter-spacing:0}
+@media(max-width:900px){.card.hero .price{font-size:2.7rem}}
+@media(max-width:680px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}.card{padding:15px;min-height:112px;border-radius:22px}.card.hero{grid-column:span 2;grid-row:auto;min-height:168px;padding:20px}.card.hero .price{font-size:2.45rem;margin-top:20px}.card.wide .price{font-size:1.5rem}.price{font-size:1.12rem;margin-top:14px}.clock{font-size:1.8rem}.dates b{font-size:.88rem}.dates span{font-size:.72rem}header{margin-bottom:20px}.chart{height:170px}}
+
+/* ================= ظاهر مخصوص هر دستگاه ================= */
+.lbl{display:none}
+.rp{position:absolute;border-radius:50%;background:currentColor;opacity:.16;transform:scale(0);animation:rp .6s ease-out forwards;pointer-events:none}
+@keyframes rp{to{transform:scale(1);opacity:0}}
+kbd{font:inherit;font-size:.68rem;opacity:.55;border:1px solid currentColor;border-radius:5px;padding:0 5px;margin-inline-start:6px}
+
+/* --- آیفون و آیپد: حس iOS --- */
+[data-device="ios"] body{-webkit-touch-callout:none}
+[data-device="ios"] input{font-size:max(16px,1.7rem)}
+
+/* --- اندروید: حس Material --- */
+[data-device="android"] .wrap{padding-bottom:112px}
+[data-device="android"] .card{border-radius:20px;overflow:hidden}
+[data-device="android"] .card:active{transform:none}
+[data-device="android"] .dock{left:0;right:0;bottom:0;transform:none;border-radius:22px 22px 0 0;padding:8px 12px calc(8px + env(safe-area-inset-bottom));justify-content:space-evenly;gap:0;background:var(--sheet)}
+[data-device="android"] .dock button{position:relative;overflow:hidden;flex-direction:column;gap:3px;height:58px;min-width:84px;border-radius:18px;font-size:.7rem}
+[data-device="android"] .dock button:active{transform:none}
+[data-device="android"] .dock.min{padding:8px 12px calc(8px + env(safe-area-inset-bottom));gap:0;transform:translateY(105%)}
+[data-device="android"] .dock.min::before{display:none}
+[data-device="android"] .dock.min button{max-width:150px;min-width:84px;height:58px;padding:0 13px;opacity:1;pointer-events:auto}
+[data-device="android"] .toast{bottom:calc(100px + env(safe-area-inset-bottom))}
+[data-device="android"] .lbl{display:inline}
+[data-device="android"] .sheet{border-radius:28px 28px 0 0}
+[data-device="android"] .seg,[data-device="android"] .seg .thumb{border-radius:999px}
+[data-device="android"] .seg button{position:relative;overflow:hidden;border-radius:999px}
+[data-device="android"] .chips button,[data-device="android"] .btn{position:relative;overflow:hidden}
+
+/* --- دسکتاپ: چیدمان عریض، منوی بالا، پنجره وسط صفحه --- */
+[data-device="desktop"] .ov{align-items:center;padding:24px}
+[data-device="desktop"] .sheet{border-radius:28px;width:min(660px,100%);max-height:88vh;padding-top:22px;transform:translateY(16px) scale(.97);opacity:0;transition:transform .4s var(--ease),opacity .3s ease}
+[data-device="desktop"] .ov.on .sheet{transform:none;opacity:1}
+[data-device="desktop"] .grab{display:none}
+[data-device="desktop"] .sh-head{margin-top:0}
+[data-device="desktop"] .chart{height:250px}
+[data-device="desktop"] .stats{grid-template-columns:repeat(4,1fr)}
+[data-device="desktop"] .eqrows{grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+[data-device="desktop"] .card:hover{transform:translateY(-3px)}
+[data-device="desktop"] .card:active{transform:translateY(-1px) scale(.99)}
+[data-device="desktop"] .dock button:hover{background:var(--glass)}
+@media(min-width:900px){
+  [data-device="desktop"] .wrap{max-width:1180px;padding:34px 40px 60px}
+  [data-device="desktop"] header{align-items:center;margin-bottom:36px}
+  [data-device="desktop"] .clock{font-size:2.7rem}
+  [data-device="desktop"] .dates b{font-size:1.1rem}
+  [data-device="desktop"] .grid{gap:16px}
+  [data-device="desktop"] .card{min-height:158px;padding:22px}
+  [data-device="desktop"] .card.hero{min-height:332px;padding:30px}
+  [data-device="desktop"] .card.hero .price{font-size:4rem}
+  [data-device="desktop"] .card.wide .price{font-size:2.1rem}
+  [data-device="desktop"] .price{font-size:1.6rem}
+  [data-device="desktop"] .dock{top:28px;bottom:auto;padding:5px;gap:4px}
+  [data-device="desktop"] .dock button{height:38px;padding:0 16px}
+  [data-device="desktop"] .lbl{display:inline}
+  [data-device="desktop"] .toast{bottom:30px}
+  [data-device="desktop"] footer{margin-top:44px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="dates"><b id="dShamsi">—</b><span id="dMiladi">—</span></div>
+    <div class="clock" id="clock">--:--<small id="sec"></small></div>
+  </header>
+  <div class="status"><span class="dot" id="dot"></span><span id="stat" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">در حال دریافت قیمت‌ها…</span></div>
+  <main class="grid" id="grid"></main>
+  <footer>
+    <div>تمام حقوق مادی و معنوی این سایت متعلق به Gilver است.</div>
+  </footer>
+</div>
+
+<nav class="dock" aria-label="منو">
+  <button data-open="calc" aria-label="ماشین حساب" title="ماشین حساب (C)"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8.5 7h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg><span class="lbl">ماشین حساب</span></button>
+  <button data-open="tg" aria-label="تلگرام" title="تلگرام (T)"><svg viewBox="0 0 24 24"><path d="M21.5 3 2.8 10.4l6 2.3L19 6l-8.2 8 .5 5.4 3-3.4 4.6 3.4z"/></svg><span class="lbl">تلگرام</span></button>
+  <button id="shot" aria-label="اسکرین‌شات" title="اسکرین‌شات (S)"><svg viewBox="0 0 24 24"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.1-1.6A1 1 0 0 1 9.6 4h4.8a1 1 0 0 1 .8.4L16.3 6h1.2A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.5" r="3.2"/></svg><span class="lbl">اسکرین‌شات</span></button>
+  <button id="install" hidden aria-label="نصب برنامه"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 20h14"/></svg><span class="lbl">نصب</span></button>
+</nav>
+
+<div class="toast" id="toast" role="status"></div>
+<div class="ov" id="ov"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+
+<script>
+/* ============ تنظیمات ============ */
+const CONFIG = {
+  refreshSeconds: 60,
+  // منبع اول (بازار ایران). اول مستقیم، اگر مرورگر اجازه نداد از طریق proxy.php روی هاست
+  tgju: {
+    urls: ["https://call5.tgju.org/ajax.json", "proxy.php?url=" + encodeURIComponent("https://call5.tgju.org/ajax.json")],
+    unit: "rial",
+    parse: j => {
+      const c = j.current || j, n = k => Number(toEn((c[k] || {}).p || 0)) || 0;
+      return {usd:n("price_dollar_rl"), g24:n("geram24"), g18:n("geram18"), mesghal:n("mesghal"), xau:n("ons"), s999:n("silver_999"), s925:n("silver_925")};
+    }
+  },
+  // منبع دوم: API رایگان نرخ‌آرا (قیمت‌ها و تاریخچه روزانه)
+  nerkhara: {
+    latest: ["https://nerkhara.com/api/v1/latest.json", "proxy.php?url=" + encodeURIComponent("https://nerkhara.com/api/v1/latest.json")],
+    history: "https://nerkhara.com/api/v1/history/"
+  },
+  usdFallback: 265000,       // فقط اگر هیچ منبعی در دسترس نبود
+  goldPremiumPct: 0,
+  silverPremiumPct: 0,
+  // اختلاف خرید و فروش (درصد). منابع قیمت خرید و فروش جدا نمی‌دهند، پس تخمین زده می‌شود. هر عدد را می‌توانید تغییر دهید.
+  spreadPct: {usd:.4, g24:.7, g18:.7, mesghal:.7, s999:2, s925:2, xau:.1, xag:.3},
+  telegram: "https://t.me/DrGilver"
+};
+const OZ = 31.1035, MESGHAL = 4.6083;
+const DEV = document.documentElement.dataset.device || "desktop"; // ios | android | desktop
+const NK = {usd:"usd", g24:"gold-24k", g18:"gold-18k", mesghal:"gold-mesghal", s999:"silver-999", xau:"xau", xag:"xag"};
+const HID = {usd:"usd", g24:"gold-24k", g18:"gold-18k", mesghal:"gold-mesghal", xau:"xau", xag:"xag"}; // کلیدهایی که تاریخچه دارند
+
+/* ============ ابزارها ============ */
+const fa = new Intl.NumberFormat("fa-IR", {maximumFractionDigits: 0});
+const fa2 = new Intl.NumberFormat("fa-IR", {maximumFractionDigits: 2});
+const en2 = new Intl.NumberFormat("en-US", {maximumFractionDigits: 2});
+const toEn = s => String(s).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[,٬،\s]/g,"");
+const $ = s => document.querySelector(s);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ============ ساعت و تاریخ ============ */
+const shamsiFmt = new Intl.DateTimeFormat("fa-IR-u-ca-persian",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+const shamsiShort = new Intl.DateTimeFormat("fa-IR-u-ca-persian",{day:"numeric",month:"short",year:"numeric"});
+function shamsi(d){ // مثال: دوشنبه، ۱۹ آبان، ۱۴۰۵
+  const p = shamsiFmt.formatToParts(d), g = t => (p.find(x=>x.type===t)||{}).value;
+  return `${g("weekday")}، ${g("day")} ${g("month")}، ${g("year")}`;
+}
+function tick(){
+  const n = new Date();
+  $("#clock").firstChild.nodeValue = n.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+  $("#sec").textContent = String(n.getSeconds()).padStart(2,"0");
+  $("#dShamsi").textContent = shamsi(n);
+  $("#dMiladi").textContent = n.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+}
+tick(); setInterval(tick,1000);
+
+/* ============ اقلام ============ */
+const ITEMS = [
+  {k:"usd",t:"دلار",c:"usd",cls:"hero",ic:"$",unit:"تومان",step:10,f:p=>p.usd},
+  {k:"g24",t:"طلا ۲۴ عیار",c:"gold",cls:"wide",ic:"۲۴",unit:"تومان / گرم",step:1000,f:p=>p.g24},
+  {k:"g18",t:"طلا ۱۸ عیار",c:"gold",ic:"۱۸",unit:"تومان / گرم",step:1000,f:p=>p.g18},
+  {k:"mesghal",t:"مثقال طلا",c:"gold",ic:"مث",unit:"تومان",step:1000,f:p=>p.mesghal},
+  {k:"xau",t:"انس جهانی طلا",c:"gold",ic:"Au",unit:"دلار",en:1,f:p=>p.xau},
+  {k:"s999",t:"نقره ۹۹۹",c:"silver",ic:"۹۹۹",unit:"تومان / گرم",step:100,f:p=>p.s999},
+  {k:"s925",t:"نقره ۹۲۵",c:"silver",ic:"۹۲۵",unit:"تومان / گرم",step:100,f:p=>p.s925},
+  {k:"xag",t:"انس جهانی نقره",c:"silver",ic:"Ag",unit:"دلار",en:1,f:p=>p.xag}
+];
+const fmtI = (i,v) => i.en ? en2.format(v) : fa.format(v);
+const rnd = (i,v) => i.en ? Math.round(v*100) : Math.round(v);
+
+/* ============ دریافت قیمت‌ها از دو منبع ============ */
+let P = null, M = {}, prev = {};
+async function getJSON(u){const r = await fetch(u,{cache:"no-store"}); if(!r.ok) throw new Error(r.status); return r.json();}
+async function firstJSON(urls){ let err; for(const u of urls){ try{ return await getJSON(u); }catch(e){ err = e; console.warn("failed:", u, e); } } throw err; }
+async function safe(f){ try{ return await f(); }catch(e){ console.warn(e); return null; } }
+
+async function getTgju(){
+  const j = await firstJSON(CONFIG.tgju.urls), d = CONFIG.tgju.parse(j), k = CONFIG.tgju.unit==="rial" ? 0.1 : 1, o = {};
+  ["usd","g24","g18","mesghal","s999","s925"].forEach(x=>{ if(d[x]>0) o[x]=d[x]*k; });
+  if(d.xau>0) o.xau = d.xau;
+  return o;
+}
+async function getNerkhara(){
+  const j = await firstJSON(CONFIG.nerkhara.latest), vals = {}, meta = {};
+  const rev = Object.fromEntries(Object.entries(NK).map(([k,v])=>[v,k]));
+  (j.items||[]).forEach(it=>{
+    const k = rev[it.id]; if(!k || !(it.price>0) || it.stale) return; // نرخ کهنه استفاده نمی‌شود
+    vals[k] = it.price;
+    meta[k] = {chg: typeof it.change_pct==="number" ? it.change_pct : null, lo: it.low_24h, hi: it.high_24h};
+  });
+  return {vals, meta};
+}
+function combine(k, N, T){ // اگر هر دو منبع نزدیک به هم بودند میانگین، وگرنه نرخ‌آرا
+  const a = N.vals[k], b = T[k];
+  if(a>0 && b>0) return Math.max(a,b)/Math.min(a,b) < 1.08 ? (a+b)/2 : a;
+  return a>0 ? a : (b>0 ? b : 0);
+}
+
+/* ---- تاریخچه محلی روی همین دستگاه (برای نمودار «امروز») ---- */
+let H = {};
+try{ H = JSON.parse(localStorage.getItem("gilver_H")||"{}") || {}; }catch(_){ H = {}; }
+function pushHistory(){
+  const now = Date.now();
+  ITEMS.forEach(i=>{
+    const v = i.f(P); if(!(v>0)) return;
+    const a = H[i.k] = H[i.k] || [], n = a.length;
+    if(n>=2 && a[n-1][1]===v && a[n-2][1]===v) a[n-1][0] = now; else a.push([now,v]);
+    if(a.length>600) a.splice(0,a.length-600);
+  });
+  try{ localStorage.setItem("gilver_H", JSON.stringify(H)); }catch(_){}
+}
+function lastChange(i){
+  const a = H[i.k]||[]; if(a.length<2) return null;
+  const cur = a[a.length-1][1];
+  for(let x=a.length-2;x>=0;x--) if(rnd(i,a[x][1])!==rnd(i,cur)) return {d:cur-a[x][1], p:(cur-a[x][1])/a[x][1]*100};
+  return null;
+}
+function todaySamples(i){
+  const d0 = new Date(); d0.setHours(0,0,0,0);
+  return (H[i.k]||[]).filter(s=>s[0]>=d0.getTime());
+}
+function chgOf(i){ // اول تغییر ۲۴ ساعته منبع، وگرنه آخرین تغییر ثبت‌شده روی دستگاه
+  const m = M[i.k];
+  if(m && typeof m.chg==="number") return {p:m.chg};
+  const lc = lastChange(i); return lc ? {p:lc.p} : null;
+}
+
+async function refresh(){
+  try{
+    const [tg, nk, gx, gs] = await Promise.all([
+      safe(getTgju), safe(getNerkhara),
+      safe(()=>getJSON("https://api.gold-api.com/price/XAU")),
+      safe(()=>getJSON("https://api.gold-api.com/price/XAG"))
+    ]);
+    const T = tg || {}, N = nk || {vals:{},meta:{}};
+    const usdV = combine("usd",N,T), u = usdV || CONFIG.usdFallback, manual = !usdV;
+    const gPrem = 1+CONFIG.goldPremiumPct/100, sPrem = 1+CONFIG.silverPremiumPct/100;
+    const oz  = (gx && gx.price) || N.vals.xau || T.xau || 0;
+    const ozS = (gs && gs.price) || N.vals.xag || 0;
+    let g24 = combine("g24",N,T), g18 = combine("g18",N,T), mes = combine("mesghal",N,T), s999 = combine("s999",N,T), s925 = T.s925 || 0;
+    if(!g24) g24 = g18 ? g18*24/18 : (oz ? oz/OZ*u*gPrem : 0);
+    if(!g24) throw new Error("no data");
+    if(!g18) g18 = g24*18/24;
+    if(!mes) mes = g18*MESGHAL;
+    if(!s999) s999 = ozS ? ozS/OZ*u*sPrem : 0;
+    if(!s925) s925 = s999*.925;
+    P = {usd:u, g24, g18, mesghal:mes, s999, s925, xau:oz, xag:ozS};
+    M = Object.assign({}, N.meta); M.s925 = N.meta.s999;
+    pushHistory(); render();
+    try{ localStorage.setItem("gilver_P", JSON.stringify({P, M, t:Date.now()})); }catch(_){}
+    const t = new Date().toLocaleTimeString("fa-IR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+    $("#dot").className = "dot ok";
+    $("#stat").textContent = "آخرین به‌روزرسانی: "+t + (manual ? " — قیمت دلار دستی است" : "");
+    if(peek) peekLive();
+  }catch(e){
+    $("#dot").className = "dot err";
+    $("#stat").textContent = P ? "اتصال برقرار نیست؛ آخرین قیمت‌های ذخیره‌شده نمایش داده می‌شود" : "خطا در دریافت قیمت‌ها؛ دوباره تلاش می‌کنیم…";
+    console.error(e);
+  }
+}
+
+function tween(el, from, to, i){
+  if(reduce || !from){ el.textContent = fmtI(i,to); return; }
+  cancelAnimationFrame(el._r);
+  const t0 = performance.now(), d = 800;
+  (function step(t){
+    const k = Math.min(1,(t-t0)/d), e = 1-Math.pow(1-k,4);
+    el.textContent = fmtI(i, from+(to-from)*e);
+    if(k<1) el._r = requestAnimationFrame(step);
+  })(t0);
+}
+function render(){
+  const g = $("#grid");
+  if(!g.children.length){
+    g.innerHTML = ITEMS.map((i,n)=>`<article class="card ${i.c} ${i.cls||""}" id="c-${i.k}" data-k="${i.k}" role="button" tabindex="0" aria-label="${i.t}" style="--n:${n}"><div class="top"><div class="ico">${i.ic}</div><h3>${i.t}</h3></div><div class="price"><span id="p-${i.k}"></span><div class="foot"><span class="unit">${i.unit}</span><span class="chg" id="d-${i.k}"></span></div></div></article>`).join("");
+    g.addEventListener("click",e=>{const c=e.target.closest(".card"); if(c) openPeek(c.dataset.k)});
+    g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){const c=e.target.closest(".card"); if(c){e.preventDefault();openPeek(c.dataset.k)}} });
+  }
+  ITEMS.forEach(i=>{
+    const v = i.f(P), el = $("#p-"+i.k);
+    if(!v){ el.textContent="—"; return; }
+    if(prev[i.k] !== undefined && rnd(i,prev[i.k]) !== rnd(i,v)){
+      tween(el, prev[i.k], v, i);
+      const c = $("#c-"+i.k); c.classList.remove("flash"); void c.offsetWidth; c.classList.add("flash");
+    } else el.textContent = fmtI(i,v);
+    prev[i.k] = v;
+    const c = chgOf(i), ch = $("#d-"+i.k);
+    if(c){ const z = Math.abs(c.p)<0.005; ch.className = "chg "+(z?"flat":c.p>0?"up":"down"); ch.textContent = (z?"":(c.p>0?"▲ ":"▼ "))+fa2.format(Math.abs(c.p))+"٪"; }
+    else { ch.className="chg"; ch.textContent=""; }
+  });
+}
+try{ const c = JSON.parse(localStorage.getItem("gilver_P")||"null"); if(c && c.P){ P = c.P; M = c.M||{}; render(); $("#stat").textContent = "آخرین قیمت ذخیره‌شده؛ در حال به‌روزرسانی…"; } }catch(_){}
+refresh(); setInterval(refresh, CONFIG.refreshSeconds*1000);
+addEventListener("online", refresh);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) refresh(); });
+
+/* ============ پنجره‌ها (کشیدن به پایین برای بستن) ============ */
+const ov = $("#ov"), sheet = $("#sheet");
+const head = t => `<div class="grab"></div><div class="sh-head"><h2>${t}</h2><button class="x" aria-label="بستن" onclick="closeSheet()">✕</button></div>`;
+let peek = null;
+/* دکمه «برگشت» اندروید و حرکت برگشت آیفون و دکمه back مرورگر، پنجره باز را می‌بندند */
+let pushed = false, skipPop = false;
+function openSheet(html){
+  sheet.innerHTML = html; sheet.scrollTop = 0; document.documentElement.classList.add("lock");
+  if(!pushed){ try{ history.pushState({sheet:1},""); pushed = true; }catch(_){} }
+  requestAnimationFrame(()=>ov.classList.add("on"));
+}
+function closeSheet(){
+  ov.classList.remove("on"); document.documentElement.classList.remove("lock"); peek = null;
+  if(pushed){ pushed = false; skipPop = true; history.back(); }
+}
+addEventListener("popstate",()=>{
+  if(skipPop){ skipPop = false; return; }
+  if(pushed){ pushed = false; ov.classList.remove("on"); document.documentElement.classList.remove("lock"); peek = null; }
+});
+ov.addEventListener("click",e=>{ if(e.target===ov) closeSheet(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
+let drag = null;
+sheet.addEventListener("pointerdown",e=>{
+  if(DEV==="desktop" || !e.target.closest(".grab,.sh-head") || e.target.closest(".x")) return;
+  drag = {y:e.clientY, t:performance.now(), dy:0}; sheet.setPointerCapture(e.pointerId); sheet.style.transition="none";
+});
+sheet.addEventListener("pointermove",e=>{
+  if(!drag) return;
+  const dy = e.clientY-drag.y; drag.dy = dy>0 ? dy : dy/6;
+  sheet.style.transform = `translateY(${drag.dy}px)`;
+});
+function endDrag(){
+  if(!drag) return;
+  const v = drag.dy/(performance.now()-drag.t), far = drag.dy>110 || v>.6;
+  sheet.style.transition = ""; sheet.style.transform = ""; drag = null;
+  if(far) closeSheet();
+}
+sheet.addEventListener("pointerup",endDrag); sheet.addEventListener("pointercancel",endDrag);
+function openTg(){ openSheet(`${head("کانال تلگرام")}<p>برای دریافت آخرین اخبار و تحلیل بازار به کانال ما بپیوندید.</p><a class="btn" href="${CONFIG.telegram}" target="_blank" rel="noopener">ورود به کانال</a>`); }
+document.querySelectorAll("[data-open]").forEach(b=>b.addEventListener("click",()=>{ b.dataset.open==="tg" ? openTg() : openCalc(); }));
+
+/* ---- ویژگی‌های مخصوص هر دستگاه ---- */
+if(DEV==="desktop"){ // میانبر صفحه‌کلید: C ماشین حساب، T تلگرام (روی کیبورد فارسی هم کار می‌کند)
+  document.addEventListener("keydown",e=>{
+    if(e.metaKey||e.ctrlKey||e.altKey||e.target.matches("input,select,textarea")) return;
+    if(e.code==="KeyC") openCalc(); else if(e.code==="KeyT") openTg(); else if(e.code==="KeyS") takeShot();
+  });
+}
+if(DEV==="android"){ // انیمیشن موج (ripple) مثل اپ‌های اندروید
+  document.addEventListener("pointerdown",e=>{
+    const t = e.target.closest(".card,.dock button,.chips button,.btn,.seg button"); if(!t) return;
+    const r = t.getBoundingClientRect(), z = Math.max(r.width,r.height)*2, sp = document.createElement("span");
+    sp.className = "rp"; sp.style.cssText = `width:${z}px;height:${z}px;left:${e.clientX-r.left-z/2}px;top:${e.clientY-r.top-z/2}px`;
+    t.appendChild(sp); setTimeout(()=>sp.remove(),650);
+  });
+}
+
+/* ============ پیش‌نمایش قلم: نمودار + خرید و فروش ============ */
+const HIST = {};
+function loadHist(k){
+  if(!HID[k]) return Promise.resolve(null);
+  if(!HIST[k]) HIST[k] = getJSON(CONFIG.nerkhara.history+HID[k]+".json")
+    .then(j=>(j.points||[]).map(p=>[new Date(p[0]+"T12:00:00").getTime(), p[1]]))
+    .catch(e=>{ delete HIST[k]; console.warn(e); return null; });
+  return HIST[k];
+}
+function ds(a,max){ if(a.length<=max) return a; const o=[], s=a.length/max; for(let x=0;x<max;x++) o.push(a[Math.floor(x*s)]); o.push(a[a.length-1]); return o; }
+function buySell(i,v){ // تخمین: قیمت میانگین ± نصف اختلاف خرید و فروش
+  const s = (CONFIG.spreadPct[i.k] ?? .5)/100, r = i.en ? (x=>Math.round(x*100)/100) : (x=>Math.round(x/i.step)*i.step);
+  return {buy:r(v*(1+s/2)), sell:r(v*(1-s/2))};
+}
+const RANGES = [["live","امروز"],["30","۱ ماه"],["90","۳ ماه"],["365","۱ سال"],["0","همه"]];
+const RLABEL = {live:"امروز","30":"۱ ماه گذشته","90":"۳ ماه گذشته","365":"سال گذشته","0":"کل دوره"};
+const dFmt = (r,t) => r==="live" ? new Date(t).toLocaleTimeString("fa-IR",{hour:"2-digit",minute:"2-digit"}) : shamsiShort.format(new Date(t));
+function deltaPill(i,d,p){
+  if(rnd(i,d)===0) return `<span class="pill flat">بدون تغییر</span>`;
+  const up = d>0;
+  return `<span class="pill ${up?"up":"down"}">${up?"▲":"▼"} ${i.en?en2.format(Math.abs(d)):fa.format(Math.abs(d))} (${fa2.format(Math.abs(p))}٪)</span>`;
+}
+
+function openPeek(k){
+  if(!P) return;
+  const i = ITEMS.find(x=>x.k===k), hasHist = !!HID[k];
+  peek = {i, range: hasHist ? "90" : "live", pts:null, scrub:false};
+  openSheet(`${head(`<span class="ico" style="--c:var(--${i.c})">${i.ic}</span>${i.t}`)}
+    <div class="pk-price" id="pkVal"></div>
+    <div class="pk-sub" id="pkSub"></div>
+    <div class="seg sm" id="pkSeg"></div>
+    <div class="chart" id="pkChart"></div>
+    <div class="cdates"><span id="pkD0"></span><span id="pkD1"></span></div>
+    <div class="stats">
+      <div class="stat buy"><small>قیمت خرید <em>تقریبی</em></small><b id="pkBuy">—</b></div>
+      <div class="stat sell"><small>قیمت فروش <em>تقریبی</em></small><b id="pkSell">—</b></div>
+      <div class="stat"><small>کمترین این بازه</small><b id="pkLo">—</b></div>
+      <div class="stat"><small>بیشترین این بازه</small><b id="pkHi">—</b></div>
+    </div>
+    <p class="note">«قیمت خرید» قیمتی است که شما می‌خرید و «قیمت فروش» قیمتی که شما می‌فروشید. این دو بر پایه اختلاف معمول بازار تخمین زده شده‌اند و ممکن است با قیمت مغازه یا صرافی فرق داشته باشند.</p>`);
+  seg($("#pkSeg"), hasHist ? RANGES : [["live","امروز"]], peek.range, setRange);
+  if(!hasHist) $("#pkSeg").style.display = "none";
+  peekLive(true); setRange(peek.range);
+}
+function valHTML(i,v){ return `${fmtI(i,v)}<span class="u">${i.unit}</span>`; }
+function defSub(){
+  const i = peek.i, c = chgOf(i), p = peek.pts;
+  let h = "";
+  if(p && p.length>1){ const d = p[p.length-1][1]-p[0][1]; h = deltaPill(i,d,d/p[0][1]*100) + `<span>${RLABEL[peek.range]}</span>`; }
+  else if(c) h = `<span class="pill ${Math.abs(c.p)<.005?"flat":c.p>0?"up":"down"}">${c.p>0?"▲":c.p<0?"▼":""} ${fa2.format(Math.abs(c.p))}٪</span><span>تغییر اخیر</span>`;
+  return h;
+}
+function peekLive(first){
+  const i = peek.i, v = i.f(P); if(!v) return;
+  if(first || !peek.scrub){ $("#pkVal").innerHTML = valHTML(i,v); }
+  const b = buySell(i,v); $("#pkBuy").textContent = fmtI(i,b.buy); $("#pkSell").textContent = fmtI(i,b.sell);
+}
+async function setRange(r){
+  const i = peek.i; peek.range = r; peek.pts = null;
+  const el = $("#pkChart"); el.classList.remove("on");
+  let pts = null;
+  if(r==="live"){ const s = todaySamples(i); pts = s.length>1 ? s : null; }
+  else {
+    el.innerHTML = '<div class="ph">در حال بارگذاری نمودار…</div>';
+    const h = await loadHist(i.k);
+    if(!peek || peek.i!==i || peek.range!==r) return;
+    if(h && h.length){
+      const last = h[h.length-1][0], cut = r==="0" ? 0 : last-Number(r)*864e5;
+      pts = h.filter(p=>p[0]>=cut);
+      const v = i.f(P); // آخرین نقطه را با قیمت لحظه‌ای هماهنگ می‌کنیم
+      if(v>0 && Date.now()-last < 2*864e5) pts = pts.slice(0,-1).concat([[Date.now(), v]]);
+    }
+  }
+  drawChart(pts);
+}
+function drawChart(pts){
+  const i = peek.i, el = $("#pkChart"), r = peek.range;
+  if(!pts || pts.length<2){
+    peek.pts = null;
+    el.innerHTML = `<div class="ph">${r==="live" ? "نمودار امروز پس از چند به‌روزرسانی ساخته می‌شود" : "داده نمودار در دسترس نیست"}</div>`;
+    ["pkD0","pkD1"].forEach(x=>$("#"+x).textContent="");
+    ["pkLo","pkHi"].forEach(x=>$("#"+x).textContent="—");
+    $("#pkSub").innerHTML = defSub(); return;
+  }
+  pts = ds(pts,260); peek.pts = pts;
+  const t0 = pts[0][0], t1 = pts[pts.length-1][0], vs = pts.map(p=>p[1]), mn = Math.min(...vs), mx = Math.max(...vs), rg = (mx-mn)||1;
+  const X = t => (t1===t0 ? 0 : (t-t0)/(t1-t0))*100, Y = v => 10+(1-(v-mn)/rg)*78;
+  const up = vs[vs.length-1] >= vs[0], col = up ? "var(--up)" : "var(--down)";
+  el.style.setProperty("--cc", col);
+  const line = pts.map((p,x)=>(x?"L":"M")+X(p[0]).toFixed(2)+" "+Y(p[1]).toFixed(2)).join(" ");
+  el.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".32"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs><path d="${line} L100 100 L0 100Z" fill="url(#pg)"/><path d="${line}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><span class="ax" style="top:8px">${fmtI(i,mx)}</span><span class="ax" style="bottom:8px">${fmtI(i,mn)}</span><i class="cur"></i><i class="pt"></i>`;
+  $("#pkD0").textContent = dFmt(r,t0); $("#pkD1").textContent = dFmt(r,t1);
+  $("#pkLo").textContent = fmtI(i,mn); $("#pkHi").textContent = fmtI(i,mx);
+  $("#pkSub").innerHTML = defSub();
+  const cur = el.querySelector(".cur"), pt = el.querySelector(".pt");
+  const show = e => { // لمس یا حرکت موس روی نمودار: قیمت و تاریخ همان نقطه
+    const b = el.getBoundingClientRect(), f = Math.min(1,Math.max(0,(e.clientX-b.left)/b.width)), t = t0+f*(t1-t0);
+    let k = 0, best = Infinity; pts.forEach((p,x)=>{ const d = Math.abs(p[0]-t); if(d<best){best=d;k=x;} });
+    const p = pts[k], x = X(p[0]), y = Y(p[1]);
+    cur.style.left = x+"%"; pt.style.left = x+"%"; pt.style.top = y+"%"; el.classList.add("on"); peek.scrub = true;
+    const d = p[1]-vs[0];
+    $("#pkVal").innerHTML = valHTML(i,p[1]);
+    $("#pkSub").innerHTML = deltaPill(i,d,d/vs[0]*100) + `<span>${dFmt(r,p[0])}</span>`;
+  };
+  const hide = () => { if(!peek) return; el.classList.remove("on"); peek.scrub = false; peekLive(true); $("#pkSub").innerHTML = defSub(); };
+  el.onpointermove = show; el.onpointerdown = e => { el.setPointerCapture(e.pointerId); show(e); };
+  el.onpointerleave = hide; el.onpointerup = e => { if(e.pointerType!=="mouse") hide(); }; el.onpointercancel = hide;
+}
+
+
+/* ============ جمع‌شدن ناچ هنگام اسکرول ============ */
+(function(){
+  const dock = $(".dock"); let last = scrollY, busy = false;
+  const atBottom = () => !(DEV==="desktop" && innerWidth>=900); // منوی بالای دسکتاپ جمع نمی‌شود
+  addEventListener("scroll",()=>{
+    if(busy) return; busy = true;
+    requestAnimationFrame(()=>{
+      const y = scrollY, d = y-last;
+      if(!atBottom() || y<40) dock.classList.remove("min");
+      else if(d>6) dock.classList.add("min");
+      else if(d<-6) dock.classList.remove("min");
+      if(Math.abs(d)>6) last = y; busy = false;
+    });
+  },{passive:true});
+  dock.addEventListener("click",e=>{ if(dock.classList.contains("min")){ e.stopPropagation(); e.preventDefault(); dock.classList.remove("min"); } },true);
+})();
+
+/* ============ اسکرین‌شات تمام‌صفحه با QR تلگرام ============ */
+const QR = [
+  "1111111000011010001111111",
+  "1000001001100010101000001",
+  "1011101000001001001011101",
+  "1011101010001101101011101",
+  "1011101011000010101011101",
+  "1000001000011110101000001",
+  "1111111010101010101111111",
+  "0000000000110001100000000",
+  "1100011101010111000011000",
+  "1011110001001010000011110",
+  "0010101010100011010001011",
+  "1110100011001011000101001",
+  "1001011101011001001000001",
+  "1101110000000011100100010",
+  "1001101001111101010111011",
+  "1001110001010010011101101",
+  "1111101100010001111110100",
+  "0000000011101100100010000",
+  "1111111010010001101010001",
+  "1000001010001101100010011",
+  "1011101001001011111110111",
+  "1011101000100011011000011",
+  "1011101001111000100001101",
+  "1000001011010010111110001",
+  "1111111011100111101001001"
+]; // QR لینک https://t.me/DrGilver
+let toastT;
+function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("on"),2200); }
+function rr(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+async function buildShot(){
+  await Promise.all(["200","400","600","800"].map(w=>document.fonts.load(w+" 20px Vazirmatn","۰۱۲۳ آب")).concat([document.fonts.ready]));
+  const cs = getComputedStyle(document.documentElement), V = n => cs.getPropertyValue(n).trim();
+  const fade = c => c.replace(/rgba\(([^)]+),[^,)]+\)/,"rgba($1,0)");
+  const FONT = "Vazirmatn, Tahoma, sans-serif", W = 1080, PAD = 56, GAP = 22, CW = (W-2*PAD-GAP)/2;
+  const items = ITEMS.map(i=>({i, big: i.k==="usd" ? 0 : i.k==="g24" ? 1 : 2}));
+  const H = PAD + 130 + 34 + 300 + GAP + 232 + GAP + 3*(210+GAP) + 270 + PAD + 40;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const c = cv.getContext("2d"); c.direction = "rtl";
+  c.fillStyle = V("--bg"); c.fillRect(0,0,W,H);
+  [[W*.95,-80,900,"--b1"],[-60,H*.35,800,"--b2"],[W*.8,H+60,900,"--b3"]].forEach(([x,y,r,v])=>{
+    const g = c.createRadialGradient(x,y,0,x,y,r); g.addColorStop(0,V(v)); g.addColorStop(1,fade(V(v))); c.fillStyle = g; c.fillRect(0,0,W,H);
+  });
+  const txt = (t,x,y,font,color,align="right",dir="rtl") => { c.font = font; c.fillStyle = color; c.textAlign = align; c.direction = dir; c.fillText(t,x,y); };
+  // سربرگ: تاریخ شمسی و میلادی راست، ساعت چپ
+  const now = new Date();
+  txt(shamsi(now), W-PAD, PAD+46, `600 46px ${FONT}`, V("--text"));
+  txt(now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"}), W-PAD, PAD+96, `300 28px ${FONT}`, V("--mute"), "right", "ltr");
+  txt(now.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}), PAD, PAD+80, `200 84px ${FONT}`, V("--text"), "left", "ltr");
+  let y = PAD+130+34;
+  const colorOf = i => V("--"+({usd:"usd",gold:"gold",silver:"silver"}[i.c]));
+  function card(x,y,w,h,i,size){
+    rr(c,x,y,w,h,36); c.fillStyle = V("--card"); c.fill(); c.lineWidth = 2; c.strokeStyle = V("--line"); c.stroke();
+    const col = colorOf(i), px = 30, top = y+px+26;
+    c.globalAlpha = .18; c.fillStyle = col; c.beginPath(); c.arc(x+w-px-26,top,26,0,7); c.fill(); c.globalAlpha = 1;
+    txt(i.ic, x+w-px-26, top+9, `600 23px ${FONT}`, col, "center");
+    txt(i.t, x+w-px-66, top+10, `400 28px ${FONT}`, V("--mute"));
+    const ch = chgOf(i);
+    if(ch){
+      const z = Math.abs(ch.p)<.005, cc = z ? V("--mute") : ch.p>0 ? V("--up") : V("--down");
+      const label = (z?"":(ch.p>0?"▲ ":"▼ "))+fa2.format(Math.abs(ch.p))+"٪";
+      c.font = `600 24px ${FONT}`; const tw = c.measureText(label).width+32;
+      rr(c,x+px,top-21,tw,42,21); c.fillStyle = V("--field"); c.fill();
+      txt(label, x+px+tw/2, top+8, `600 24px ${FONT}`, cc, "center");
+    }
+    let fs = size, price = fmtI(i,i.f(P)); c.font = `800 ${fs}px ${FONT}`;
+    while(c.measureText(price).width > w-2*px && fs>28){ fs -= 2; c.font = `800 ${fs}px ${FONT}`; }
+    txt(price, x+w-px, y+h-px-34, `800 ${fs}px ${FONT}`, V("--text"));
+    txt(i.unit, x+w-px, y+h-px+4, `300 24px ${FONT}`, V("--mute"));
+  }
+  card(PAD,y,W-2*PAD,300,items[0].i,124); y += 300+GAP;
+  card(PAD,y,W-2*PAD,232,items[1].i,78); y += 232+GAP;
+  items.slice(2).forEach((o,n)=>{
+    const col = n%2, x = PAD + (col===0 ? CW+GAP : 0); // ردیف راست‌به‌چپ
+    card(x,y,CW,210,o.i,58); if(col===1) y += 210+GAP;
+  });
+  // بخش اسکن تلگرام: QR سمت راست، آیدی کانال جلوی آن
+  const fh = 270; rr(c,PAD,y,W-2*PAD,fh,40); c.fillStyle = V("--card"); c.fill(); c.lineWidth = 2; c.strokeStyle = V("--line"); c.stroke();
+  const m = 8, q = 25*m, qp = 22, qs = q+2*qp, qx = W-PAD-30-qs, qy = y+(fh-qs)/2;
+  rr(c,qx,qy,qs,qs,24); c.fillStyle = "#ffffff"; c.fill(); c.fillStyle = "#0b1210";
+  QR.forEach((row,r)=>[...row].forEach((b,k)=>{ if(b==="1") c.fillRect(qx+qp+k*m, qy+qp+r*m, m, m); }));
+  const tx = qx-36;
+  txt("اسکن کن و به کانال تلگرام بپیوند", tx, y+98, `400 30px ${FONT}`, V("--mute"));
+  txt("@DrGilver", tx, y+178, `800 72px ${FONT}`, V("--gold"), "right", "ltr");
+  txt("DrGilver", W/2, H-PAD-4, `300 24px ${FONT}`, V("--mute"), "center", "ltr");
+  return cv;
+}
+async function takeShot(){
+  if(!P){ toast("هنوز قیمتی دریافت نشده"); return; }
+  toast("در حال ساخت تصویر…");
+  try{
+    const cv = await buildShot(), blob = await new Promise(r=>cv.toBlob(r,"image/png"));
+    const file = new File([blob],"DrGilver-"+new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")+".png",{type:"image/png"});
+    if(DEV!=="desktop" && navigator.canShare && navigator.canShare({files:[file]})){ // گوشی: منوی اشتراک‌گذاری و ذخیره در گالری
+      try{ await navigator.share({files:[file], title:"DrGilver"}); toast("تصویر آماده شد"); return; }catch(e){ if(e.name==="AbortError") return; }
+    }
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000); toast("تصویر ذخیره شد");
+  }catch(e){ console.error(e); toast("ساخت تصویر ناموفق بود"); }
+}
+$("#shot").addEventListener("click",takeShot);
+
+/* ============ وب‌اپ: نصب و آفلاین ============ */
+if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+let deferred = null;
+addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); deferred=e; $("#install").hidden=false; });
+const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+if(DEV==="ios" && !standalone) $("#install").hidden = false; // آیفون پنجره نصب خودکار ندارد؛ راهنما نشان می‌دهیم
+$("#install").addEventListener("click",async()=>{
+  if(!deferred){ if(DEV==="ios") openSheet(`${head("نصب روی آیفون")}<p>در Safari دکمه اشتراک‌گذاری (مربع با فلش رو به بالا) را بزن و گزینه «Add to Home Screen» را انتخاب کن تا DrGilver مثل یک اپ روی صفحه اصلی بیاید.</p>`); return; }
+  deferred.prompt(); await deferred.userChoice; deferred=null; $("#install").hidden=true;
+});
+addEventListener("appinstalled",()=>{ $("#install").hidden=true; });
+
+/* ============ ماشین حساب ============ */
+const UNITS = {gram:{l:"گرم",g:1}, sout:{l:"سوت",g:0.01}, mesghal:{l:"مثقال",g:MESGHAL}}; // ۱ گرم = ۱۰۰ سوت
+const KARATS = {gold:[["24","۲۴ عیار"],["18","۱۸ عیار"],["m","مثقال"]], silver:[["999","۹۹۹"],["925","۹۲۵"],["900","۹۰۰"],["800","۸۰۰"]]};
+const num = s => parseFloat(toEn(s).replace(/٫/g,"."));
+
+function groupInput(el){ // سه‌رقم‌سه‌رقم کردن هنگام تایپ، با حفظ جای نشانگر
+  const pos = el.selectionStart;
+  const after = toEn(el.value.slice(pos)).replace(/[^0-9]/g,"").length;
+  let t = toEn(el.value).replace(/٫/g,".").replace(/[^0-9.]/g,"");
+  const i = t.indexOf("."); if(i>-1) t = t.slice(0,i+1)+t.slice(i+1).replace(/\./g,"");
+  const [ip,dp] = t.split(".");
+  let out = (ip||"").replace(/^0+(?=\d)/,"").replace(/\B(?=(\d{3})+(?!\d))/g,"٬");
+  if(dp!==undefined) out += "."+dp;
+  el.value = out.replace(/[0-9]/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]).replace(/\./g,"٫");
+  let n = el.value.length, c = 0;
+  while(n>0 && c<after){ n--; if(/[۰-۹]/.test(el.value[n])) c++; }
+  el.setSelectionRange(n,n);
+}
+function seg(el, opts, val, cb){ // کنترل بخش‌بندی‌شده با حرکت نرم مثل iOS
+  el.style.setProperty("--n", opts.length);
+  const old = el.querySelector(".thumb");
+  el.innerHTML = '<i class="thumb"></i>' + opts.map(([v,l])=>`<button type="button" data-v="${v}">${l}</button>`).join("");
+  const set = v => { el.style.setProperty("--i", Math.max(0,opts.findIndex(o=>o[0]===v))); el.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===v)); };
+  el.onclick = e => { const b = e.target.closest("button"); if(!b) return; set(b.dataset.v); cb(b.dataset.v); };
+  set(val);
+}
+
+function openCalc(){
+  openSheet(`${head("ماشین حساب")}
+    <div class="seg" id="sType"></div>
+    <div class="seg sm" id="sK"></div>
+    <span class="cap">حالت محاسبه</span><div class="seg sm" id="sMode"></div>
+    <span class="cap" id="uCap">واحد</span><div class="seg sm" id="sUnit"></div>
+    <span class="cap" id="cLbl">مبلغ</span>
+    <div class="inwrap"><input id="cIn" inputmode="decimal" autocomplete="off" placeholder="۰"><span class="suf" id="cSuf">تومان</span><button class="clr" id="cClr" hidden aria-label="پاک کردن">✕</button></div>
+    <div class="chips" id="cChips"></div>
+    <div class="res"><small id="cSm">نتیجه</small><span class="out" id="cOut">—</span><div class="eqrows" id="cEq"></div></div>
+    <p class="note" id="cNote"></p>`);
+
+  const st = {type:"gold", k:"18", mode:"money", unit:"gram"};
+  const $i = $("#cIn");
+  const unitsFor = () => st.type==="usd" ? [] : (st.k==="m" ? ["mesghal","gram","sout"] : ["gram","sout"]);
+
+  function ppg(){ return st.type==="gold" ? (st.k==="m" ? P.mesghal/MESGHAL : P.g24*Number(st.k)/24) : P.s999*Number(st.k)/999; }
+  function karatLabel(){ const o = (KARATS[st.type]||[]).find(x=>x[0]===st.k); return o ? o[1] : ""; }
+
+  function build(){
+    const usd = st.type==="usd";
+    $("#sK").style.display = usd ? "none" : "";
+    $("#sUnit").style.display = $("#uCap").style.display = usd ? "none" : "";
+    if(!usd) seg($("#sK"), KARATS[st.type], st.k, v=>{ st.k=v; fixUnit(); buildUnit(); update(); });
+    fixUnit(); buildUnit(); buildChips(); update();
+  }
+  function fixUnit(){ const u = unitsFor(); if(u.length && !u.includes(st.unit)) st.unit = u[0]; }
+  function buildUnit(){ const u = unitsFor(); if(u.length) seg($("#sUnit"), u.map(x=>[x,UNITS[x].l]), st.unit, v=>{ st.unit=v; buildChips(); update(); }); }
+  function buildChips(){
+    let list;
+    if(st.mode==="money") list = [[1e6,"۱ میلیون"],[5e6,"۵ میلیون"],[10e6,"۱۰ میلیون"],[50e6,"۵۰ میلیون"],[100e6,"۱۰۰ میلیون"]];
+    else if(st.type==="usd") list = [10,50,100,500,1000].map(x=>[x,fa.format(x)]);
+    else list = ({gram:[1,2,5,10,50],sout:[10,50,100,500],mesghal:[1,2,5,10]}[st.unit]).map(x=>[x,fa.format(x)]);
+    $("#cChips").innerHTML = list.map(([v,l])=>`<button type="button" data-v="${v}">${l}</button>`).join("");
+  }
+  function update(){
+    const money = st.mode==="money", usd = st.type==="usd", U = UNITS[st.unit];
+    $("#uCap").textContent = money ? "نمایش مقدار بر حسب" : "واحد مقدار";
+    $("#cLbl").textContent = money ? "مبلغ شما" : "مقدار شما";
+    $("#cSuf").textContent = money ? "تومان" : (usd ? "دلار" : U.l);
+    const v = num($i.value); $("#cClr").hidden = !$i.value;
+    const out = $("#cOut"), eq = $("#cEq");
+    if(!P){ out.textContent = "در انتظار قیمت‌ها…"; return; }
+    $("#cNote").textContent = usd ? `قیمت هر دلار: ${fa.format(P.usd)} تومان`
+      : `قیمت هر گرم ${st.type==="gold"?"طلای ":"نقره "}${karatLabel()}: ${fa.format(ppg())} تومان` + (st.k==="m" && st.type==="gold" ? ` — هر مثقال: ${fa.format(P.mesghal)} تومان` : "");
+    let txt = "—", rows = "";
+    if(v>0){
+      if(usd){
+        txt = money ? fa2.format(v/P.usd)+" دلار" : fa.format(v*P.usd)+" تومان";
+      } else {
+        const p = ppg(), grams = money ? v/p : v*U.g, total = money ? v : grams*p;
+        txt = money ? fa2.format(grams/U.g)+" "+U.l : fa.format(total)+" تومان";
+        rows = `<div><span>گرم</span><b>${fa2.format(grams)}</b></div><div><span>سوت</span><b>${fa2.format(grams*100)}</b></div>` + (st.type==="gold" && st.k==="m" ? `<div><span>مثقال</span><b>${fa2.format(grams/MESGHAL)}</b></div>` : "");
+        if(money) rows += "";
+        else rows += `<div><span>تومان</span><b>${fa.format(total)}</b></div>`;
+      }
+    }
+    $("#cSm").textContent = v>0 ? (money ? "مقدار قابل خرید" : "مبلغ کل") : "نتیجه";
+    if(out.textContent !== txt){ out.textContent = txt; out.classList.remove("pop"); void out.offsetWidth; out.classList.add("pop"); }
+    eq.innerHTML = rows;
+  }
+
+  seg($("#sType"), [["usd","دلار"],["gold","طلا"],["silver","نقره"]], st.type, v=>{ st.type=v; st.k = v==="gold" ? "18" : v==="silver" ? "999" : ""; build(); });
+  seg($("#sMode"), [["money","مبلغ ← مقدار"],["qty","مقدار ← مبلغ"]], st.mode, v=>{ st.mode=v; $i.value=""; buildChips(); update(); });
+  $i.addEventListener("input",()=>{ groupInput($i); update(); });
+  $("#cClr").addEventListener("click",()=>{ $i.value=""; update(); $i.focus(); });
+  $("#cChips").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; $i.value = b.dataset.v; groupInput($i); update(); });
+  build();
+}
+</script>
+</body>
+</html>
